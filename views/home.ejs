@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <style>
+            body{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                text-align: center;
+            }
+            .container{
+                background-color: #171717;
+                color: rgb(195, 204, 224);
+                padding: 10%;
+                min-width: fit-content;
+            }
+            #geturl{
+                background-color: rgb(195, 204, 224);
+                margin-bottom: 5px;
+                min-width: 200px;
+                max-width: fit-content;
+                font-size: larger;
+                border: 2px solid rgb(255, 9, 120) ;
+            }
+            #submiturl{
+                background-color: rgb(195, 204, 224);
+                min-width: 200px;
+                max-width: fit-content;
+                font-size: larger;
+                border: 2px solid rgb(255, 9, 120);
+                transition: all 0.5s; 
+            }
+            
+            #urlbtn{
+                max-width: fit-content;
+                font-size: larger;
+                border: 2px solid rgb(255, 9, 120);
+                transition: all 0.5s;
+            }
+            #urlbtn:hover{
+                color:rgb(195, 204, 224);
+                background-color: rgb(17, 13, 30);
+                border-radius: 5px;
+                text-decoration: none;
+            }
+            #submiturl:hover{
+                color:rgb(195, 204, 224);
+                background-color: rgb(17, 13, 30);
+                border-radius: 5px;
+            }
+        </style>
+
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="style.css" rel="stylesheet">
+    </head>
+    
+    <body>
+      <div class="container">
+        <h1>URL Shortner</h1>
+        <form method="POST", action="/url">
+            <label>Enter your original URL below</label><br>
+            <input type="text" name="url" id="geturl" placeholder="https://example.com" required><br>
+            <button type="submit" name="submiturl" id="submiturl">Generate</button>
+        </form>
+        <div>
+            <h3>You url id will generate belowed soon</h3>
+            <button name="urlbtn" id="urlbtn"></button>
+        </div>
+     </div>
+    </body>
+</html>
