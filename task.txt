@@ -1,0 +1,102 @@
+===============URL Shortner=============
+Design a URL Shortner service that takes in a valid URL and return a Shortned URL,
+redirecting the user to the previously probided URL.
+
+also, keep track of total visits/clicks on the URL.
+
+Routes:
+POST /URL - Generates a new short URL and returns the Shortned URL in the 
+format example.com/random-id.
+
+GET /:id   - redirecting the user to the original URL
+
+GET /URL/analytics/:id - Returns the clicks for the provided short id.
+
+
+
+
+
+
+
+
+//row code
+const express = require("express");
+const mongoose = require("mongoose"); //step:1
+const shortUrl = require("shortid");
+const PORT = 8001
+
+//connecting to the mongodb
+mongoose.connect("mongodb://127.0.0.1:27017/url-shortner-db").then(() => { //step:2
+  console.log("Mongodb connected successfully");
+}).catch(()=>{
+  console.log("Mongodb not connected properly")
+})
+
+//creating the schema
+const schema = new mongoose.Schema( //step:3
+  {
+    shortID: {
+      type: String,
+      required:true,
+      unique: true,
+    },
+    redirectingURL:{
+        type:String,
+        required:true,
+    },
+    totalClicks: {
+      type: Number,
+      default:0,
+    },
+  },
+  { timestamps: true }
+);
+//creating the model
+const URL = mongoose.model("shortUrl_collection", schema); //step:4
+
+const app = express();
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json()) //for the incomming requiests
+
+//TASK:1
+app.post("/url", async (req, res) => {
+  //get the request body here so here i am getting the url from the json data
+  const body = req.body;
+  const originalURL = body.url; //extracting the url
+    if(!originalURL){
+        return res.status(400).json({msg:"URL Required"})
+    }
+    const newShortID = shortUrl(); //here we created the shortID of original url
+
+    const newShortenerEntry = await URL.create({  //step:5
+      shortID: newShortID,
+      redirectingURL:originalURL,
+    });
+    res.status(201).json({ id: newShortenerEntry.shortID });
+});
+
+//TASK:2
+app.get("/url/:id", async (req,res)=>{
+    const shortID = req.params.id
+    const entry = await URL.findOne({ shortID }); //step:6 
+    // Increment the totalClicks count
+    entry.totalClicks += 1;
+    await entry.save();//saved and update in the database
+    res.redirect(entry.redirectingURL)//redirecting the original url
+})
+
+//TASK:3
+app.get("/url/analysis/:id", async (req, res)=>{
+  const shortID = req.params.id 
+  if(!shortID){
+    return res.status(400).json({error:"Provid proper short ID"})
+  }
+  const entry = await URL.findOne({shortID})
+  return res.status(200).json({
+    clickedURL:entry.redirectingURL,
+    totalClicks:entry.totalClicks
+  })
+})
+
+
+app.listen(PORT, () => console.log(`The server started successfully at port: ${PORT}`))
